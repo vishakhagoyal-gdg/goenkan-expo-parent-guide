@@ -63,6 +63,48 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
  h1{font-size:27px}
 }
 }
+
+/* Interactive Expo map */
+.floor-note{font-size:12px;color:var(--muted);margin-bottom:8px}
+.map-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 0 12px}
+.expo-map{position:relative;min-width:900px;max-width:980px;height:820px;margin:auto;background:#fbf7ea;border:1px solid #d7e0ea;border-radius:20px;overflow:hidden;box-shadow:0 8px 24px rgba(24,49,83,.07)}
+.map-zone{position:absolute;border-radius:12px;border:1px solid rgba(24,49,83,.13);box-shadow:0 2px 8px rgba(24,49,83,.04)}
+.map-zone-title{font-weight:900;font-size:16px;line-height:1.05;text-align:center}
+.map-zone-sub{font-size:10px;font-weight:700;text-align:center;margin-top:3px}
+.z1{left:18px;top:24px;width:170px;height:230px;background:#eaf6ff;padding:12px}
+.z2{left:205px;top:22px;width:515px;height:180px;background:#fff4df;padding:12px}
+.entry-road{position:absolute;right:18px;top:18px;width:150px;height:180px;border-right:13px solid #e32323;border-bottom:13px solid #e32323;border-radius:0 0 18px 0}
+.entry-road:after{content:"MAIN ENTRY";position:absolute;right:-2px;top:22px;background:#e32323;color:#fff;font-size:11px;font-weight:900;padding:6px 9px;border-radius:6px}
+.vehicles{position:absolute;left:420px;top:184px;font-size:10px;font-weight:800;color:#c62828}
+.greenroom{left:380px;top:212px;width:260px;height:62px;background:#dff4d5;padding:8px}
+.stage{position:absolute;left:400px;top:274px;width:220px;height:52px;background:#183153;color:#fff;border-radius:0 0 8px 8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px}
+.zone4label{position:absolute;left:200px;top:212px;font-weight:900;color:var(--navy);font-size:20px}
+.zone4sub{position:absolute;left:200px;top:238px;font-size:11px;color:#9a4d92;font-weight:800}
+.map-center{position:absolute;left:310px;top:342px;width:380px;height:235px}
+.seats{display:grid;grid-template-columns:1fr 1fr;gap:18px;height:100%}
+.seatblock{border-radius:9px;background:repeating-linear-gradient(0deg,#ebeff3 0 7px,#cfd7df 7px 9px);border:1px solid #cfd7df;position:relative}
+.seatblock:before{content:"";position:absolute;left:18%;right:18%;top:-78px;height:64px;background:repeating-linear-gradient(0deg,#8ed8ff 0 7px,#27a7ef 7px 9px);border:1px solid #4ab4ef;border-radius:7px}
+.console{position:absolute;left:50%;top:90px;transform:translate(-50%,-50%);background:white;border:2px solid #cfd9e7;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:900;color:var(--navy);z-index:2}
+.left-stalls,.right-stalls{position:absolute;top:330px;width:105px;display:flex;flex-direction:column;gap:2px}
+.left-stalls{left:205px}.right-stalls{right:168px}
+.subject-stack{display:flex;flex-direction:column;gap:2px;border-radius:8px;overflow:hidden;margin-bottom:4px}
+.subject-label{font-size:10px;font-weight:900;text-align:center;padding:5px 3px;color:#fff}
+.map-stall{border:0;border-radius:4px;padding:4px 3px;font-size:10px;font-weight:900;line-height:1;background:#fff;color:#14213d;box-shadow:none;min-height:22px;cursor:pointer}
+.map-stall:hover,.map-stall:focus{outline:2px solid #183153;transform:scale(1.04);z-index:3}
+.subj-ENGLISH{background:#ef3b35}.subj-HINDI{background:#15969b}.subj-MATH{background:#f57c00}.subj-SCIENCE{background:#e91e63}.subj-SOCIAL{background:#1976d2}.subj-GUJARATI{background:#2e9f45}.subj-FRENCH{background:#ec4d9a}.subj-ICT{background:#f0b400}.subj-ROBOTICS{background:#7b3fc5}
+.subject-stack .map-stall{color:white;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.45)}
+.bottom-stalls{position:absolute;left:310px;right:168px;top:590px;height:78px;display:grid;grid-template-columns:21fr 7fr;gap:4px}
+.bottom-subject{border-radius:8px;padding:5px;overflow:hidden}
+.bottom-subject .subject-label{padding:2px 0 5px}
+.bottom-row{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px}
+.bottom-row .map-stall{padding:5px 1px;font-size:9px}
+.zone5{left:310px;right:168px;top:680px;height:125px;background:#fff4df;padding:10px 14px}
+.zone5-icons{display:flex;justify-content:space-around;align-items:center;margin-top:12px;font-size:23px}
+.zone5-entry{position:absolute;left:279px;top:663px;color:#138a38;font-weight:900;font-size:11px;text-align:center}
+.zone5-entry:before{content:"↓";display:block;font-size:28px;line-height:24px}
+.map-help{position:absolute;right:20px;bottom:14px;font-size:10px;color:var(--muted);background:rgba(255,255,255,.9);padding:7px 9px;border-radius:8px;border:1px solid #dfe7f1}
+@media(max-width:640px){.expo-map{min-width:860px}.floor-note{font-size:11px}}
+
 </style>
 </head>
 <body>
@@ -83,15 +125,58 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
     <div class="filters" id="filters"></div>
   </div>
 
-  <div class="section-title"><h2>Expo Floor Plan</h2><span class="small">Final layout will be added here</span></div>
-  <div class="placeholder">
-    <strong>Interactive Floor Plan Coming Next</strong>
-    Once the final layout is available, every stall on the map can open its details directly in this browser.
-    <div class="actions">
-      <a class="cta" href="#stalls">Browse Stalls</a>
-      <a class="cta alt" href="https://drive.google.com/uc?export=download&id=1hOBlJXmSQ-xZziym5Vkuj2yxa4TVCtQj" target="_blank" rel="noopener">Download PDF Guide</a>
+
+  <div class="section-title"><h2>Interactive Expo Floor Plan</h2><span class="small">Tap a stall to view details</span></div>
+  <div class="floor-note">Swipe sideways on mobile if needed. Every numbered project stall below is clickable.</div>
+  <div class="map-scroll">
+    <div class="expo-map" id="expoMap">
+      <div class="map-zone z1">
+        <div class="map-zone-title">Zone 1</div>
+        <div class="map-zone-sub">Day Care / Grade IV Dining</div>
+        <div style="margin-top:22px;text-align:center;font-size:11px;font-weight:800">Male & Female Washrooms<br><br>Gate 1 • Gate 2 • Gate 3</div>
+      </div>
+      <div class="map-zone z2">
+        <div class="map-zone-title">Zone 2</div>
+        <div class="map-zone-sub">Staff & Participant Students Food Area</div>
+        <div style="display:flex;justify-content:space-around;margin-top:30px;font-size:10px;font-weight:800">
+          <span>Jain Food</span><span>Food Counter</span><span>Food Counter</span><span>Food Counter</span><span>Juice Counter</span>
+        </div>
+      </div>
+      <div class="entry-road"></div>
+      <div class="vehicles">🚑 AMBULANCE &nbsp;&nbsp;&nbsp; 🚒 FIRE BRIGADE</div>
+
+      <div class="map-zone greenroom">
+        <div class="map-zone-title">GREEN ROOM</div>
+        <div class="map-zone-sub">✚ MEDICAL</div>
+      </div>
+      <div class="stage">STAGE</div>
+      <div class="zone4label">ZONE 4</div>
+      <div class="zone4sub">Stage, Seating & Project Stalls</div>
+
+      <div class="left-stalls" id="leftMapStalls"></div>
+      <div class="right-stalls" id="rightMapStalls"></div>
+
+      <div class="map-center">
+        <div class="seats"><div class="seatblock"></div><div class="seatblock"></div></div>
+        <div class="console">CONSOLE</div>
+      </div>
+
+      <div style="position:absolute;left:360px;top:550px;font-size:10px;font-weight:800">STANDEE &nbsp;&nbsp; ART WORK DISPLAY</div>
+      <div style="position:absolute;left:560px;top:542px;background:#dff3ff;border-radius:8px;padding:9px 16px;font-size:11px;font-weight:900;color:#183153">LIVE ART STAGE</div>
+      <div style="position:absolute;left:700px;top:550px;font-size:10px;font-weight:800">ART WORK DISPLAY &nbsp;&nbsp; STANDEE</div>
+
+      <div class="bottom-stalls" id="bottomMapStalls"></div>
+      <div class="zone5-entry">ENTRY TO<br>ZONE 5</div>
+      <div class="map-zone zone5">
+        <div class="map-zone-title">Zone 5</div>
+        <div class="map-zone-sub">Food Zone Area</div>
+        <div class="zone5-icons"><span>🍽️</span><span>🪑</span><span>💧</span><span>🗑️</span><span>🪑</span><span>🍽️</span></div>
+        <div style="text-align:center;margin-top:9px;font-size:10px;font-weight:800">Water Counter • Water Tank • Washbasin • Parent Restrooms</div>
+      </div>
+      <div class="map-help">Tip: tap any stall number for project, students & teacher details.</div>
     </div>
   </div>
+
 
   <div class="section-title" id="stalls"><h2>Stall Directory</h2><span class="small" id="count"></span></div>
   <div class="grid" id="grid"></div>
@@ -136,6 +221,61 @@ const filters = document.getElementById("filters");
 
 document.getElementById("search").addEventListener("input",render);
 
+
+function stallButton(code){
+  const b=document.createElement("button");
+  b.className="map-stall";
+  b.textContent=code;
+  b.dataset.stall=code;
+  b.title="Open "+code+" details";
+  b.onclick=()=>openStallByCode(code);
+  return b;
+}
+function makeStack(title,codes,cls){
+  const box=document.createElement("div");
+  box.className="subject-stack "+cls;
+  const label=document.createElement("div");
+  label.className="subject-label";
+  label.textContent=title;
+  box.appendChild(label);
+  codes.forEach(c=>box.appendChild(stallButton(c)));
+  return box;
+}
+function openStallByCode(code){
+  const s=stalls.find(x=>x.stall===code);
+  if(s) openModal(s);
+}
+function buildInteractiveMap(){
+  const left=document.getElementById("leftMapStalls");
+  const right=document.getElementById("rightMapStalls");
+  const bottom=document.getElementById("bottomMapStalls");
+  if(!left||!right||!bottom) return;
+
+  left.appendChild(makeStack("ROBOTICS",["R79","R78","R77","R76","R75","R74","R73"],"subj-ROBOTICS"));
+  left.appendChild(makeStack("ICT",["C72","C71","C70","C69","C68"],"subj-ICT"));
+  left.appendChild(makeStack("FRENCH",["F67","F66"],"subj-FRENCH"));
+  left.appendChild(makeStack("GUJARATI",["G65","G64","G63","G62","G61"],"subj-GUJARATI"));
+  left.appendChild(makeStack("SOCIAL SCIENCE",["SS60","SS59","SS58","SS57","SS56","SS55","SS54"],"subj-SOCIAL"));
+
+  right.appendChild(makeStack("ENGLISH",["E1","E2","E3","E4","E5","E6","E7","E8","E9","E10","E11"],"subj-ENGLISH"));
+  right.appendChild(makeStack("HINDI",["H12","H13","H14","H15","H16","H17","H18","H19"],"subj-HINDI"));
+  right.appendChild(makeStack("MATH",["M20","M21","M22","M23","M24","M25"],"subj-MATH"));
+
+  const sci=document.createElement("div"); sci.className="bottom-subject subj-SCIENCE";
+  sci.innerHTML='<div class="subject-label">SCIENCE</div>';
+  const sr=document.createElement("div"); sr.className="bottom-row";
+  ["S53","S52","S51","S50","S49","S48","S47","S46","S45","S44","S43","S42","S41","S40","S39","S38","S37","S36","S35","S34","S33"].forEach(c=>sr.appendChild(stallButton(c)));
+  sci.appendChild(sr);
+
+  const math=document.createElement("div"); math.className="bottom-subject subj-MATH";
+  math.innerHTML='<div class="subject-label">MATH</div>';
+  const mr=document.createElement("div"); mr.className="bottom-row";
+  ["M32","M31","M30","M29","M28","M27","M26"].forEach(c=>mr.appendChild(stallButton(c)));
+  math.appendChild(mr);
+
+  bottom.appendChild(sci); bottom.appendChild(math);
+}
+
 function render(){
  const q=document.getElementById("search").value.trim().toLowerCase();
  const list=stalls.filter(s=>(active==="ALL"||s.subject===active) &&
@@ -163,6 +303,7 @@ function openModal(s){
  document.body.style.overflow="hidden";
 }
 function closeModal(){document.getElementById("modal").classList.remove("open");document.body.style.overflow="";}
+buildInteractiveMap();
 render();
 </script>
 </body>
