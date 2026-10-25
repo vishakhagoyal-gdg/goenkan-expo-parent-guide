@@ -107,7 +107,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 
 </style>
 <style>
-.approved-map{position:relative;width:100%;min-width:720px;max-width:1200px;margin:auto;line-height:0}
+.approved-map{position:relative;width:100%;min-width:0;max-width:1200px;margin:auto;line-height:0}
 .approved-map>img{display:block;width:100%;height:auto}
 .hotspots{position:absolute;inset:0}
 .map-hotspot{position:absolute;background:transparent;border:0;cursor:pointer;padding:0;border-radius:3px}
@@ -115,6 +115,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 .image-error{display:none;line-height:1.5;padding:32px;text-align:center}
 .image-missing .image-error{display:block}
 .image-missing .hotspots{display:none}
+.map-hotspot.map-match{background:rgba(255,211,52,.30);outline:1px solid rgba(120,86,0,.7)}
+.map-hotspot.map-dimmed{opacity:.25}
+.map-hotspot.map-selected{background:rgba(23,118,255,.45)!important;outline:3px solid #1154c5!important;z-index:3}
+.locate-button{margin-top:10px;padding:7px 12px;border:1px solid #9bb6d8;border-radius:9px;background:#eef6ff;color:#16345c;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
@@ -247,7 +251,7 @@ function buildInteractiveMap(){
 
 function buildApprovedMapHotspots(){
  const layer=document.getElementById('mapHotspots');if(!layer)return;
- const add=(code,x,y,w,h)=>{const b=document.createElement('button');b.type='button';b.className='map-hotspot';b.title='Open stall '+code;b.setAttribute('aria-label','Open stall '+code);Object.assign(b.style,{left:x/1448*100+'%',top:y/1086*100+'%',width:w/1448*100+'%',height:h/1086*100+'%'});b.onclick=()=>openStallByCode(code);layer.appendChild(b)};
+ const add=(code,x,y,w,h)=>{if(!stalls.some(s=>s.stall===code))return;const b=document.createElement('button');b.type='button';b.className='map-hotspot';b.dataset.stall=code;b.title='Open stall '+code;b.setAttribute('aria-label','Open stall '+code);Object.assign(b.style,{left:x/1448*100+'%',top:y/1086*100+'%',width:w/1448*100+'%',height:h/1086*100+'%'});b.onclick=()=>openStallByCode(code);layer.appendChild(b)};
  const column=(codes,x,y0,y1,w)=>codes.forEach((code,i)=>add(code,x,y0+(y1-y0)*i/codes.length,w,(y1-y0)/codes.length));
  column(['R79','R78','R77','R76','R75','R74','R73'],267,160,299,57);
  column(['C72','C71','C70','C69','C68'],267,337,424,57);
@@ -260,18 +264,33 @@ function buildApprovedMapHotspots(){
  ['S53','S52','S51','S50','S49','S48','S47','S46','S45','S44','S43','S42','S41','S40','S39','S38','S37','S36','S35','S34','S33'].forEach((c,i)=>add(c,386+i*26.15,695,25.8,56));
  ['M32','M31','M30','M29','M28','M27','M26'].forEach((c,i)=>add(c,939+i*37.7,695,36,56));
 }
+function locateStall(code){
+ const b=[...document.querySelectorAll('.map-hotspot')].find(el=>el.dataset.stall===code);
+ if(!b)return;
+ document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'center'});
+ b.classList.add('map-selected');setTimeout(()=>b.classList.remove('map-selected'),4000);
+}
+function syncMapSearch(){
+ const q=document.getElementById('search').value.trim().toLowerCase();
+ document.querySelectorAll('.map-hotspot').forEach(b=>{
+  const s=stalls.find(x=>x.stall===b.dataset.stall);
+  const hit=s&&(active==='ALL'||s.subject===active)&&(!q||[s.stall,s.subject,s.project,s.teacher,...s.students.flat()].join(' ').toLowerCase().includes(q));
+  b.classList.toggle('map-dimmed',!hit);
+  b.classList.toggle('map-match',!!q&&!!hit);
+ });
+}
 function render(){
  const q=document.getElementById("search").value.trim().toLowerCase();
  const list=stalls.filter(s=>(active==="ALL"||s.subject===active) &&
    (!q || [s.stall,s.subject,s.project,s.teacher,...s.students.flat()].join(" ").toLowerCase().includes(q)));
  document.getElementById("count").textContent=list.length+" stalls";
- const grid=document.getElementById("grid"); grid.innerHTML="";
+ const grid=document.getElementById("grid"); grid.innerHTML="";syncMapSearch();
  list.forEach(s=>{
   const c=document.createElement("div"); c.className="card";
   c.innerHTML=`<div class="topline"><div><div class="stall">${s.stall}</div><div class="subj">${s.subject}</div></div></div>
   <div class="proj">${s.project}</div><div class="teacher">Teacher: ${s.teacher||"—"}</div>`;
   c.onclick=()=>openModal(s);
-  grid.appendChild(c);
+  const locate=document.createElement("button");locate.type="button";locate.className="locate-button";locate.textContent="Locate on map";locate.onclick=e=>{e.stopPropagation();locateStall(s.stall)};c.appendChild(locate);grid.appendChild(c);
  });
 }
 
