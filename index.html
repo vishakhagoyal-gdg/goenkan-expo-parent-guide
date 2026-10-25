@@ -106,6 +106,16 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 @media(max-width:640px){.expo-map{min-width:860px}.floor-note{font-size:11px}}
 
 </style>
+<style>
+.approved-map{position:relative;width:100%;min-width:720px;max-width:1200px;margin:auto;line-height:0}
+.approved-map>img{display:block;width:100%;height:auto}
+.hotspots{position:absolute;inset:0}
+.map-hotspot{position:absolute;background:transparent;border:0;cursor:pointer;padding:0;border-radius:3px}
+.map-hotspot:hover,.map-hotspot:focus-visible{background:rgba(0,83,255,.22);outline:2px solid #184fbb;outline-offset:0}
+.image-error{display:none;line-height:1.5;padding:32px;text-align:center}
+.image-missing .image-error{display:block}
+.image-missing .hotspots{display:none}
+</style>
 </head>
 <body>
 <header>
@@ -129,51 +139,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
   <div class="section-title"><h2>Interactive Expo Floor Plan</h2><span class="small">Tap a stall to view details</span></div>
   <div class="floor-note">Swipe sideways on mobile if needed. Every numbered project stall below is clickable.</div>
   <div class="map-scroll">
-    <div class="expo-map" id="expoMap">
-      <div class="map-zone z1">
-        <div class="map-zone-title">Zone 1</div>
-        <div class="map-zone-sub">Day Care / Grade IV Dining</div>
-        <div style="margin-top:22px;text-align:center;font-size:11px;font-weight:800">Male & Female Washrooms<br><br>Gate 1 • Gate 2 • Gate 3</div>
-      </div>
-      <div class="map-zone z2">
-        <div class="map-zone-title">Zone 2</div>
-        <div class="map-zone-sub">Staff & Participant Students Food Area</div>
-        <div style="display:flex;justify-content:space-around;margin-top:30px;font-size:10px;font-weight:800">
-          <span>Jain Food</span><span>Food Counter</span><span>Food Counter</span><span>Food Counter</span><span>Juice Counter</span>
-        </div>
-      </div>
-      <div class="entry-road"></div>
-      <div class="vehicles">🚑 AMBULANCE &nbsp;&nbsp;&nbsp; 🚒 FIRE BRIGADE</div>
-
-      <div class="map-zone greenroom">
-        <div class="map-zone-title">GREEN ROOM</div>
-        <div class="map-zone-sub">✚ MEDICAL</div>
-      </div>
-      <div class="stage">STAGE</div>
-      <div class="zone4label">ZONE 4</div>
-      <div class="zone4sub">Stage, Seating & Project Stalls</div>
-
-      <div class="left-stalls" id="leftMapStalls"></div>
-      <div class="right-stalls" id="rightMapStalls"></div>
-
-      <div class="map-center">
-        <div class="seats"><div class="seatblock"></div><div class="seatblock"></div></div>
-        <div class="console">CONSOLE</div>
-      </div>
-
-      <div style="position:absolute;left:360px;top:550px;font-size:10px;font-weight:800">STANDEE &nbsp;&nbsp; ART WORK DISPLAY</div>
-      <div style="position:absolute;left:560px;top:542px;background:#dff3ff;border-radius:8px;padding:9px 16px;font-size:11px;font-weight:900;color:#183153">LIVE ART STAGE</div>
-      <div style="position:absolute;left:700px;top:550px;font-size:10px;font-weight:800">ART WORK DISPLAY &nbsp;&nbsp; STANDEE</div>
-
-      <div class="bottom-stalls" id="bottomMapStalls"></div>
-      <div class="zone5-entry">ENTRY TO<br>ZONE 5</div>
-      <div class="map-zone zone5">
-        <div class="map-zone-title">Zone 5</div>
-        <div class="map-zone-sub">Food Zone Area</div>
-        <div class="zone5-icons"><span>🍽️</span><span>🪑</span><span>💧</span><span>🗑️</span><span>🪑</span><span>🍽️</span></div>
-        <div style="text-align:center;margin-top:9px;font-size:10px;font-weight:800">Water Counter • Water Tank • Washbasin • Parent Restrooms</div>
-      </div>
-      <div class="map-help">Tip: tap any stall number for project, students & teacher details.</div>
+    <div class="approved-map" id="expoMap">
+      <img src="expo-map.png" alt="Approved Goenkan Expo floor plan showing Zones 4 and 5" draggable="false" onerror="this.closest('.approved-map').classList.add('image-missing')">
+      <div class="hotspots" id="mapHotspots" aria-label="Clickable project stalls"></div>
+      <p class="image-error">The approved map image must be uploaded as expo-map.png to finish the interactive floor plan.</p>
     </div>
   </div>
 
@@ -276,6 +245,21 @@ function buildInteractiveMap(){
   bottom.appendChild(sci); bottom.appendChild(math);
 }
 
+function buildApprovedMapHotspots(){
+ const layer=document.getElementById('mapHotspots');if(!layer)return;
+ const add=(code,x,y,w,h)=>{const b=document.createElement('button');b.type='button';b.className='map-hotspot';b.title='Open stall '+code;b.setAttribute('aria-label','Open stall '+code);Object.assign(b.style,{left:x/1448*100+'%',top:y/1086*100+'%',width:w/1448*100+'%',height:h/1086*100+'%'});b.onclick=()=>openStallByCode(code);layer.appendChild(b)};
+ const column=(codes,x,y0,y1,w)=>codes.forEach((code,i)=>add(code,x,y0+(y1-y0)*i/codes.length,w,(y1-y0)/codes.length));
+ column(['R79','R78','R77','R76','R75','R74','R73'],267,160,299,57);
+ column(['C72','C71','C70','C69','C68'],267,337,424,57);
+ column(['F67','F66'],267,461,494,57);
+ column(['G65','G64','G63','G62','G61'],267,535,615,57);
+ column(['SS60','SS59','SS58','SS57','SS56','SS55','SS54'],267,656,774,57);
+ column(['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10','E11'],1094,156,357,45);
+ column(['H12','H13','H14','H15','H16','H17','H18','H19'],1094,401,542,45);
+ column(['M20','M21','M22','M23','M24','M25'],1094,580,677,45);
+ ['S53','S52','S51','S50','S49','S48','S47','S46','S45','S44','S43','S42','S41','S40','S39','S38','S37','S36','S35','S34','S33'].forEach((c,i)=>add(c,386+i*26.15,695,25.8,56));
+ ['M32','M31','M30','M29','M28','M27','M26'].forEach((c,i)=>add(c,939+i*37.7,695,36,56));
+}
 function render(){
  const q=document.getElementById("search").value.trim().toLowerCase();
  const list=stalls.filter(s=>(active==="ALL"||s.subject===active) &&
@@ -303,7 +287,7 @@ function openModal(s){
  document.body.style.overflow="hidden";
 }
 function closeModal(){document.getElementById("modal").classList.remove("open");document.body.style.overflow="";}
-buildInteractiveMap();
+buildApprovedMapHotspots();
 render();
 </script>
 </body>
