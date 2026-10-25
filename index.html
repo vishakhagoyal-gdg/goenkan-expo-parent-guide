@@ -119,6 +119,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 .map-hotspot.map-dimmed{opacity:.25}
 .map-hotspot.map-selected{background:rgba(23,118,255,.45)!important;outline:3px solid #1154c5!important;z-index:3}
 .locate-button{margin-top:10px;padding:7px 12px;border:1px solid #9bb6d8;border-radius:9px;background:#eef6ff;color:#16345c;font-weight:700;cursor:pointer}
+.painting-hotspot:focus-visible,.painting-hotspot:hover{background:rgba(25,112,245,.25);outline:3px solid #1557b4}
+#paintingModal .sheet{max-height:88vh;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -176,6 +178,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
  </div>
 </div>
 
+<div class="modal" id="paintingModal" onclick="if(event.target===this) closePainting()"><div class="sheet"><div class="handle"></div><div class="mstall">LIVE PAINTING</div><div class="msubject">Goenkan Expo 2026–27</div><div class="mproject">Participating Students</div><p>Student list transcribed from the provided Live Painting sheet (25 fully visible entries).</p><table><thead><tr><th>#</th><th>Student Name</th><th>Class / Division</th></tr></thead><tbody></tbody></table><button class="close" onclick="closePainting()">Close</button></div></div>
 <footer>G.D. Goenka International School, Surat • Goenkan Expo 2026–27</footer>
 
 <script>
@@ -249,9 +252,13 @@ function buildInteractiveMap(){
   bottom.appendChild(sci); bottom.appendChild(math);
 }
 
+const livePaintingStudents=[["MEHREEN KAUR CHADHA","III B"],["AMYRA KASHIF SHAIKH","III C"],["AARYA VIVEK ITALIA","III C"],["PRAYAAN SUMIT DARUKA","V A"],["SAANVI DHAREWA","V A"],["MAYANSHI SUMIT DARUKA","VI C"],["RITESH HITESH BANSAL","VI E"],["VIANNA KEYUR MULIA","VI E"],["VEDIKA ASHUTOSH KANODIA","VI E"],["SHAURYA VIPIN GARG","VII C"],["KAVYA GAURANGBHAI RAMANI","VII D"],["MADHAVI RUPESH DAGA","VIII D"],["MAANYA NAVEEN BOHRA","VIII D"],["PARIHA VIJAY MAVANI","VIII D"],["VANI LOHIA","VIII D"],["SHANAYA PATEL","VIII E"],["ANIKA BHARTIA","VIII E"],["TVISHI MANOJ AGARWAL","IX B"],["AANGI JINESHKUMAR ZAVERI","IX B"],["AAROHI RAJESH PRAHLADKA","X C"],["DIVA SAMIR PATEL","X D"],["HITAKSHI KARAN KHAITAN","X D"],["SAMAIRA PULKIT DALMIA","X D"],["PRANAV ABHISHEK KHETAN","XII C"],["YASHASVI RAKESH HASWANI","XII A"]];
+function openLivePainting(){const modal=document.getElementById('paintingModal');const body=modal.querySelector('tbody');body.replaceChildren();livePaintingStudents.forEach(([name,cls],i)=>{const tr=document.createElement('tr');for(const val of [i+1,name,cls]){const td=document.createElement('td');td.textContent=val;tr.appendChild(td)}body.appendChild(tr)});modal.classList.add('open');document.body.style.overflow='hidden'}
+function closePainting(){document.getElementById('paintingModal').classList.remove('open');document.body.style.overflow=''}
 function buildApprovedMapHotspots(){
  const layer=document.getElementById('mapHotspots');if(!layer)return;
  const add=(code,x,y,w,h)=>{if(!stalls.some(s=>s.stall===code))return;const b=document.createElement('button');b.type='button';b.className='map-hotspot';b.dataset.stall=code;b.title='Open stall '+code;b.setAttribute('aria-label','Open stall '+code);Object.assign(b.style,{left:x/1448*100+'%',top:y/1086*100+'%',width:w/1448*100+'%',height:h/1086*100+'%'});b.onclick=()=>openStallByCode(code);layer.appendChild(b)};
+ const painting=document.createElement('button');painting.type='button';painting.className='map-hotspot painting-hotspot';painting.title='View live painting students';painting.setAttribute('aria-label','View live painting student list');Object.assign(painting.style,{left:'42.5%',top:'50.5%',width:'14%',height:'10%'});painting.onclick=openLivePainting;layer.appendChild(painting);
  const column=(codes,x,y0,y1,w)=>codes.forEach((code,i)=>add(code,x,y0+(y1-y0)*i/codes.length,w,(y1-y0)/codes.length));
  column(['R79','R78','R77','R76','R75','R74','R73'],267,160,299,57);
  column(['C72','C71','C70','C69','C68'],267,337,424,57);
