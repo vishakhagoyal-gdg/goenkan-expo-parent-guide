@@ -296,7 +296,6 @@ function initVisualCalibration(){
  const apply=(code,p)=>{const b=[...layer.querySelectorAll('[data-stall]')].find(x=>x.dataset.stall===code);if(!b)return;Object.assign(b.style,{left:p.x+'%',top:p.y+'%',width:p.w+'%',height:p.h+'%'})};
  Object.entries(positions).forEach(([code,p])=>apply(code,p));
  const mark=()=>{layer.querySelectorAll('[data-stall]').forEach(b=>b.classList.toggle('calibration-target',b.dataset.stall===select.value))};select.onchange=mark;mark();
- layer.addEventListener('click',e=>{if(e.target.closest('[data-stall]'))e.stopPropagation()},true);
  document.getElementById('expoMap').addEventListener('click',e=>{
   e.preventDefault();e.stopPropagation();const code=select.value;if(!code)return;
   const rect=document.getElementById('expoMap').getBoundingClientRect();const b=[...layer.querySelectorAll('[data-stall]')].find(x=>x.dataset.stall===code);
