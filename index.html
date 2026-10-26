@@ -105,6 +105,14 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 .map-help{position:absolute;right:20px;bottom:14px;font-size:10px;color:var(--muted);background:rgba(255,255,255,.9);padding:7px 9px;border-radius:8px;border:1px solid #dfe7f1}
 @media(max-width:640px){.expo-map{min-width:860px}.floor-note{font-size:11px}}
 
+
+/* Visual calibration mode: available only with ?calibrate=1 */
+.calibration-panel{display:none;position:sticky;top:0;z-index:50;background:#fff;border:2px solid #265ca2;padding:12px;border-radius:12px;line-height:1.5;box-shadow:0 4px 20px #0002}
+.calibration-panel.visible{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.calibration-panel select{padding:9px;border-radius:8px}
+.calibration-mode .map-hotspot{outline:1px dashed #174aa7;background:rgba(20,80,200,.12)}
+.calibration-mode .map-hotspot.calibration-target{outline:3px solid #e40046;background:rgba(255,50,110,.23);z-index:10}
+.calibration-mode .approved-map{cursor:crosshair}
 </style>
 <style>
 .approved-map{position:relative;width:100%;min-width:0;max-width:1200px;margin:auto;line-height:0}
@@ -144,7 +152,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 
   <div class="section-title"><h2>Interactive Expo Floor Plan</h2><span class="small">Tap a stall to view details</span></div>
   <div class="floor-note">Swipe sideways on mobile if needed. Every numbered project stall below is clickable.</div>
-  <div class="map-scroll">
+  <div id="calibrationPanel" class="calibration-panel"><strong>Stall alignment editor</strong><label>Choose stall <select id="calibrationStall"></select></label><span>Click the centre of its printed number on the image.</span><button type="button" id="calibrationExport">Copy calibrated positions</button><button type="button" id="calibrationReset">Reset this browser</button><span id="calibrationStatus" role="status"></span></div>
+<div class="map-scroll">
     <div class="approved-map" id="expoMap">
       <img src="Expo%20Layout.png" alt="Approved Goenkan Expo floor plan showing Zones 4 and 5" draggable="false" onerror="this.closest('.approved-map').classList.add('image-missing')">
       <div class="hotspots" id="mapHotspots" aria-label="Clickable project stalls"></div>
@@ -271,6 +280,36 @@ function buildApprovedMapHotspots(){
  ['S53','S52','S51','S50','S49','S48','S47','S46','S45','S44','S43','S42','S41','S40','S39','S38','S37','S36','S35','S34','S33'].forEach((c,i)=>add(c,386+i*(548/21),694,548/21,55));
  ['M32','M31','M30','M29','M28','M27','M26'].forEach((c,i)=>add(c,940+i*(262/7),694,262/7,55));
 }
+
+// Visual alignment editor. Browser-local until exported and reviewed for publication.
+function initVisualCalibration(){
+ const enabled=new URLSearchParams(location.search).get('calibrate')==='1';
+ if(!enabled)return;
+ document.body.classList.add('calibration-mode');
+ const panel=document.getElementById('calibrationPanel');panel.classList.add('visible');
+ const select=document.getElementById('calibrationStall');
+ const codes=[...document.querySelectorAll('#mapHotspots [data-stall]')].map(b=>b.dataset.stall);
+ codes.forEach(code=>{const o=document.createElement('option');o.value=code;o.textContent=code;select.appendChild(o)});
+ const key='expo-hotspot-calibration-v1';let positions={};
+ try{positions=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){positions={}}
+ const layer=document.getElementById('mapHotspots');
+ const apply=(code,p)=>{const b=[...layer.querySelectorAll('[data-stall]')].find(x=>x.dataset.stall===code);if(!b)return;Object.assign(b.style,{left:p.x+'%',top:p.y+'%',width:p.w+'%',height:p.h+'%'})};
+ Object.entries(positions).forEach(([code,p])=>apply(code,p));
+ const mark=()=>{layer.querySelectorAll('[data-stall]').forEach(b=>b.classList.toggle('calibration-target',b.dataset.stall===select.value))};select.onchange=mark;mark();
+ layer.addEventListener('click',e=>{if(e.target.closest('[data-stall]'))e.stopPropagation()},true);
+ document.getElementById('expoMap').addEventListener('click',e=>{
+  e.preventDefault();e.stopPropagation();const code=select.value;if(!code)return;
+  const rect=document.getElementById('expoMap').getBoundingClientRect();const b=[...layer.querySelectorAll('[data-stall]')].find(x=>x.dataset.stall===code);
+  const w=parseFloat(b.style.width),h=parseFloat(b.style.height);
+  const x=Math.max(0,Math.min(100-w,(e.clientX-rect.left)/rect.width*100-w/2));
+  const y=Math.max(0,Math.min(100-h,(e.clientY-rect.top)/rect.height*100-h/2));
+  positions[code]={x:+x.toFixed(4),y:+y.toFixed(4),w,h};apply(code,positions[code]);localStorage.setItem(key,JSON.stringify(positions));
+  document.getElementById('calibrationStatus').textContent=code+' positioned · '+Object.keys(positions).length+' saved locally';
+  const next=codes.indexOf(code)+1;if(next<codes.length){select.value=codes[next];mark()}
+ },true);
+ document.getElementById('calibrationExport').onclick=()=>{const data=JSON.stringify(positions,null,2);if(navigator.clipboard?.writeText){navigator.clipboard.writeText(data).then(()=>{document.getElementById('calibrationStatus').textContent='Copied. Paste positions into chat for publishing.'}).catch(()=>prompt('Copy positions',data))}else prompt('Copy positions',data)};
+ document.getElementById('calibrationReset').onclick=()=>{localStorage.removeItem(key);location.reload()};
+}
 function locateStall(code){
  const b=[...document.querySelectorAll('.map-hotspot')].find(el=>el.dataset.stall===code);
  if(!b)return;
@@ -314,6 +353,7 @@ function openModal(s){
 }
 function closeModal(){document.getElementById("modal").classList.remove("open");document.body.style.overflow="";}
 buildApprovedMapHotspots();
+initVisualCalibration();
 render();
 </script>
 </body>
