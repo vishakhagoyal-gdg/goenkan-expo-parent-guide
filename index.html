@@ -260,7 +260,7 @@ function buildApprovedMapHotspots(){
  const add=(code,x,y,w,h)=>{if(!stalls.some(s=>s.stall===code))return;const b=document.createElement('button');b.type='button';b.className='map-hotspot';b.dataset.stall=code;b.title='Open stall '+code;b.setAttribute('aria-label','Open stall '+code);Object.assign(b.style,{left:x/1408*100+'%',top:y/1056*100+'%',width:w/1408*100+'%',height:h/1056*100+'%'});b.onclick=()=>openStallByCode(code);layer.appendChild(b)};
  const painting=document.createElement('button');painting.type='button';painting.className='map-hotspot painting-hotspot';painting.title='View live painting students';painting.setAttribute('aria-label','View live painting student list');Object.assign(painting.style,{left:'42.5%',top:'50.5%',width:'14%',height:'10%'});painting.onclick=openLivePainting;layer.appendChild(painting);
  const column=(codes,x,y0,y1,w)=>codes.forEach((code,i)=>add(code,x,y0+(y1-y0)*i/codes.length,w,(y1-y0)/codes.length));
- column(['R79','R78','R77','R76','R75','R74','R73'],317,100,209,28);
+ column(['R79','R78','R77','R76','R75','R74','R73'],317,177,290,28);
  column(['C72','C71','C70','C69','C68'],317,337,415,28);
  column(['F67','F66'],317,462,495,28);
  column(['G65','G64','G63','G62','G61'],317,536,620,28);
