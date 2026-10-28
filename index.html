@@ -277,7 +277,7 @@ function buildFoodMapHotspots(){
  // Central Zone 5 area navigates to the complete Food Carnival directory.
  // This overlay does not cover any individual stall-number targets.
  const zone=document.createElement('button');zone.type='button';zone.className='map-hotspot food-zone-hotspot';
- zone.setAttribute('aria-label','Open Zone 5 Food Carnival with all 15 stalls');
+ zone.dataset.foodZone='ZONE 5';zone.setAttribute('aria-label','Open Zone 5 Food Carnival with all 15 stalls');
  zone.title='Zone 5 · View all 15 food stalls';
  Object.assign(zone.style,{left:'34%',top:'67%',width:'33%',height:'5%',zIndex:'3'});
  zone.onclick=showFoodZone;layer.appendChild(zone);
@@ -410,32 +410,43 @@ function applyApprovedManualPositions(){
 
 // Visual alignment editor. Browser-local until exported and reviewed for publication.
 function initVisualCalibration(){
- const enabled=new URLSearchParams(location.search).get('calibrate')==='1';
- if(!enabled)return;
+ const mode=new URLSearchParams(location.search).get('calibrate');
+ if(mode!=='1'&&mode!=='food')return;
+ const foodMode=mode==='food';
  document.body.classList.add('calibration-mode');
  const panel=document.getElementById('calibrationPanel');panel.classList.add('visible');
- const select=document.getElementById('calibrationStall');
- const codes=[...document.querySelectorAll('#mapHotspots [data-stall]')].map(b=>b.dataset.stall);
- codes.forEach(code=>{const o=document.createElement('option');o.value=code;o.textContent=code;select.appendChild(o)});
- const key='expo-hotspot-calibration-v1';let positions={};
- try{positions=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){positions={}}
+ const select=document.getElementById('calibrationStall');select.replaceChildren();
  const layer=document.getElementById('mapHotspots');
- const apply=(code,p)=>{const b=[...layer.querySelectorAll('[data-stall]')].find(x=>x.dataset.stall===code);if(!b)return;Object.assign(b.style,{left:p.x+'%',top:p.y+'%',width:p.w+'%',height:p.h+'%'})};
+ const targets=foodMode?[...layer.querySelectorAll('[data-food-zone], [data-food-stall]')]:[...layer.querySelectorAll('[data-stall]')];
+ const codeFor=b=>foodMode?(b.dataset.foodZone||'FOOD '+b.dataset.foodStall):b.dataset.stall;
+ const codes=targets.map(codeFor);
+ codes.forEach(code=>{const o=document.createElement('option');o.value=code;o.textContent=code;select.appendChild(o)});
+ const key=foodMode?'expo-food-calibration-v1':'expo-hotspot-calibration-v1';
+ let positions={};try{positions=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){positions={}}
+ const apply=(code,p)=>{const b=targets.find(x=>codeFor(x)===code);if(!b)return;Object.assign(b.style,{left:p.x+'%',top:p.y+'%',width:p.w+'%',height:p.h+'%'})};
  Object.entries(positions).forEach(([code,p])=>apply(code,p));
- const mark=()=>{layer.querySelectorAll('[data-stall]').forEach(b=>b.classList.toggle('calibration-target',b.dataset.stall===select.value))};select.onchange=mark;mark();
+ const mark=()=>targets.forEach(b=>b.classList.toggle('calibration-target',codeFor(b)===select.value));
+ select.onchange=mark;mark();
+ document.getElementById('calibrationStatus').textContent=foodMode?'FOOD ZONE CALIBRATION · SELECT ZONE 5 OR STALL 1–15, THEN CLICK ITS CENTER ON THE MAP':'STALL CALIBRATION';
  document.getElementById('expoMap').addEventListener('click',e=>{
   e.preventDefault();e.stopPropagation();const code=select.value;if(!code)return;
-  const rect=document.getElementById('expoMap').getBoundingClientRect();const b=[...layer.querySelectorAll('[data-stall]')].find(x=>x.dataset.stall===code);
+  const rect=document.getElementById('expoMap').getBoundingClientRect(),b=targets.find(x=>codeFor(x)===code);
   const w=parseFloat(b.style.width),h=parseFloat(b.style.height);
   const x=Math.max(0,Math.min(100-w,(e.clientX-rect.left)/rect.width*100-w/2));
   const y=Math.max(0,Math.min(100-h,(e.clientY-rect.top)/rect.height*100-h/2));
-  positions[code]={x:+x.toFixed(4),y:+y.toFixed(4),w,h};apply(code,positions[code]);localStorage.setItem(key,JSON.stringify(positions));
-  document.getElementById('calibrationStatus').textContent=code+' positioned · '+Object.keys(positions).length+' saved locally';
+  positions[code]={x:+x.toFixed(4),y:+y.toFixed(4),w,h};apply(code,positions[code]);
+  localStorage.setItem(key,JSON.stringify(positions));
+  document.getElementById('calibrationStatus').textContent=code+' POSITIONED · '+Object.keys(positions).length+' SAVED LOCALLY';
   const next=codes.indexOf(code)+1;if(next<codes.length){select.value=codes[next];mark()}
  },true);
- document.getElementById('calibrationExport').onclick=()=>{const data=JSON.stringify(positions,null,2);if(navigator.clipboard?.writeText){navigator.clipboard.writeText(data).then(()=>{document.getElementById('calibrationStatus').textContent='Copied. Paste positions into chat for publishing.'}).catch(()=>prompt('Copy positions',data))}else prompt('Copy positions',data)};
+ document.getElementById('calibrationExport').onclick=()=>{
+  const data=JSON.stringify(positions,null,2);
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(data).then(()=>{document.getElementById('calibrationStatus').textContent='COPIED · PASTE THE COORDINATES INTO CHAT TO PUBLISH'}).catch(()=>prompt('Copy positions',data));
+  else prompt('Copy positions',data);
+ };
  document.getElementById('calibrationReset').onclick=()=>{localStorage.removeItem(key);location.reload()};
 }
+
 function locateStall(code){
  const b=[...document.querySelectorAll('.map-hotspot')].find(el=>el.dataset.stall===code);
  if(!b)return;
