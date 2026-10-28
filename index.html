@@ -190,7 +190,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
  </div>
 </div>
 
-<div class="modal" id="foodModal" onclick="if(event.target===this) closeFoodModal()"><div class="sheet"><div class="handle"></div><div class="mstall" id="foodNumber"></div><div class="msubject" id="foodType"></div><div class="mproject" id="foodName"></div><h3>Food Menu</h3><table><thead><tr><th>Food Item</th><th>Price (₹)</th></tr></thead><tbody id="foodItems"></tbody></table><div id="foodStaff" style="margin-top:16px"></div><div id="foodStudents" style="margin-top:12px"></div><button class="close" onclick="closeFoodModal()">Close</button></div></div>
+<div class="modal" id="foodModal" onclick="if(event.target===this) closeFoodModal()"><div class="sheet"><div class="handle"></div><div class="mstall" id="foodNumber"></div><div class="msubject" id="foodType"></div><div class="mproject" id="foodName"></div><h3>Food Menu</h3><table><thead><tr><th>Food Item</th><th>Price (₹)</th></tr></thead><tbody id="foodItems"></tbody></table><div id="foodStaff" class="info" style="margin-top:16px"></div><div id="foodStudents" style="margin-top:12px"></div><button class="close" onclick="closeFoodModal()">Close</button></div></div>
 <div class="modal" id="paintingModal" onclick="if(event.target===this) closePainting()"><div class="sheet"><div class="handle"></div><div class="mstall">LIVE PAINTING</div><div class="msubject">Goenkan Expo 2026–27</div><div class="mproject">Participating Students</div><table><thead><tr><th>#</th><th>Student Name</th><th>Class / Division</th></tr></thead><tbody></tbody></table><button class="close" onclick="closePainting()">Close</button></div></div>
 <footer>G.D. Goenka International School, Surat • Goenkan Expo 2026–27</footer>
 
@@ -205,7 +205,14 @@ function openFoodStall(number){
  const body=document.getElementById('foodItems');body.replaceChildren();
  for(const [item,price] of f.items){const tr=document.createElement('tr');for(const value of [item,price?(price==='MRP'?'MRP':'₹'+price):'Price not listed']){const td=document.createElement('td');td.textContent=value;tr.appendChild(td)}body.appendChild(tr)}
  const staff=document.getElementById('foodStaff');staff.replaceChildren();
- if(f.teacher){const p=document.createElement('p');p.textContent='Teacher In-Charge: '+f.teacher+(f.phone?' · '+f.phone:'');staff.appendChild(p)}
+ if(f.teacher){
+  for(const [label,value] of [['Teacher In-Charge',f.teacher],['Teacher Contact',f.phone||'Not listed']]){
+   const box=document.createElement('div');box.className='ibox';
+   const title=document.createElement('div');title.className='ilabel';title.textContent=label;
+   const content=document.createElement('div');content.className='ivalue';content.textContent=value;
+   box.append(title,content);staff.appendChild(box);
+  }
+}
  const students=document.getElementById('foodStudents');students.replaceChildren();
  const addPeople=(title,people)=>{if(!people.length)return;const h=document.createElement('h3');h.textContent=title;students.appendChild(h);const ul=document.createElement('ul');for(const [name,cls] of people){const li=document.createElement('li');li.textContent=name+(cls?' · '+cls:'');ul.appendChild(li)}students.appendChild(ul)};
  addPeople('Student Team',f.students);addPeople('Helpers',f.helpers);
