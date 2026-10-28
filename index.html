@@ -130,6 +130,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 .painting-hotspot:focus-visible,.painting-hotspot:hover{background:rgba(25,112,245,.25);outline:3px solid #1557b4}
 #paintingModal .sheet{max-height:88vh;overflow-y:auto}
  .food-detail-card{cursor:default;overflow-wrap:anywhere} .food-subheading{margin:14px 0 5px;font-size:14px;color:#16345c} .food-people{margin:4px 0 8px;padding-left:19px;font-size:13px;line-height:1.55} #food-stalls{scroll-margin-top:18px} #foodGrid{align-items:start} #foodGrid .food-detail-card table{font-size:12px} #foodGrid .food-detail-card td{padding:7px 4px} .food-zone-hotspot:hover,.food-zone-hotspot:focus-visible{background:rgba(20,90,190,.10)}
+.food-card{cursor:pointer}.food-card:hover,.food-card:focus-visible{border-color:#8caee1;box-shadow:0 5px 18px rgba(24,79,187,.12);outline-offset:2px}.food-card .locate-button{margin-top:12px}
 </style>
 </head>
 <body>
@@ -220,35 +221,19 @@ function showFoodZone(){
 function buildFoodDirectory(){
  const grid=document.getElementById('foodGrid');if(!grid)return;
  grid.replaceChildren();
- const make=(tag,cls,value)=>{const el=document.createElement(tag);if(cls)el.className=cls;el.textContent=value;return el};
  for(const f of foodStalls){
-  const card=document.createElement('article');card.className='card food-detail-card';
-  card.append(make('div','stall','STALL '+f.number),make('div','proj',f.name),make('div','subj',f.type==='STUDENT'?'Student-run stall':'Outside vendor'));
-  if(f.teacher)card.append(make('div','teacher','Teacher In-Charge: '+f.teacher));
-  if(f.phone)card.append(make('div','teacher','Contact: '+f.phone));
-  if(f.students.length){
-   card.append(make('h4','food-subheading','Participating Students'));
-   const ul=document.createElement('ul');ul.className='food-people';
-   for(const [name,cls] of f.students)ul.append(make('li','',name+(cls?' · '+cls:'')));
-   card.append(ul);
-  }
-  if(f.helpers.length){
-   card.append(make('h4','food-subheading','Helpers'));
-   const ul=document.createElement('ul');ul.className='food-people';
-   for(const [name,cls] of f.helpers)ul.append(make('li','',name+(cls?' · '+cls:'')));
-   card.append(ul);
-  }
-  card.append(make('h4','food-subheading','Food Menu'));
-  const table=document.createElement('table');const thead=document.createElement('thead');const heading=document.createElement('tr');
-  for(const label of ['Item','Price'])heading.append(make('th','',label));
-  thead.append(heading);table.append(thead);
-  const tbody=document.createElement('tbody');
-  for(const [item,price] of f.items){
-   const tr=document.createElement('tr');
-   tr.append(make('td','',item),make('td','',price?(price==='MRP'?'MRP':'₹'+price):'Price not listed'));
-   tbody.append(tr);
-  }
-  table.append(tbody);card.append(table);grid.append(card);
+  const card=document.createElement('div');card.className='card food-card';card.tabIndex=0;card.setAttribute('role','button');
+  card.setAttribute('aria-label','Open Stall '+f.number+', '+f.name+', details and menu');
+  const stall=document.createElement('div');stall.className='stall';stall.textContent='STALL '+f.number;
+  const type=document.createElement('div');type.className='subj';type.textContent=f.type==='STUDENT'?'STUDENT FOOD STALL':'OUTSIDE VENDOR';
+  const name=document.createElement('div');name.className='proj';name.textContent=f.name;
+  const teacher=document.createElement('div');teacher.className='teacher';teacher.textContent=f.teacher?'Teacher: '+f.teacher:'Food Carnival Vendor';
+  const button=document.createElement('button');button.type='button';button.className='locate-button';button.textContent='View stall details & menu';
+  button.onclick=e=>{e.stopPropagation();openFoodStall(f.number)};
+  card.append(stall,type,name,teacher,button);
+  card.onclick=()=>openFoodStall(f.number);
+  card.onkeydown=e=>{if(e.target===card&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openFoodStall(f.number)}};
+  grid.append(card);
  }
 }
 function buildFoodMapHotspots(){
