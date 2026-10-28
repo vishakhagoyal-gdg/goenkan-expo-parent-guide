@@ -446,23 +446,32 @@ function applyApprovedManualPositions(){
 // Visual alignment editor. Browser-local until exported and reviewed for publication.
 function initVisualCalibration(){
  const mode=new URLSearchParams(location.search).get('calibrate');
- if(mode!=='1'&&mode!=='food')return;
- const foodMode=mode==='food';
+ if(mode!=='1'&&mode!=='food'&&mode!=='stage')return;
+ const foodMode=mode==='food',stageMode=mode==='stage';
  document.body.classList.add('calibration-mode');
  const panel=document.getElementById('calibrationPanel');panel.classList.add('visible');
  const select=document.getElementById('calibrationStall');select.replaceChildren();
  const layer=document.getElementById('mapHotspots');
- const targets=foodMode?[...layer.querySelectorAll('[data-food-zone], [data-food-stall]')]:[...layer.querySelectorAll('[data-stall]')];
- const codeFor=b=>foodMode?(b.dataset.foodZone||'FOOD '+b.dataset.foodStall):b.dataset.stall;
+ const targets=stageMode?[...layer.querySelectorAll('[data-map-area="STAGE"]')]:foodMode?[...layer.querySelectorAll('[data-food-zone], [data-food-stall]')]:[...layer.querySelectorAll('[data-stall]')];
+ const codeFor=b=>stageMode?'STAGE':foodMode?(b.dataset.foodZone||'FOOD '+b.dataset.foodStall):b.dataset.stall;
  const codes=targets.map(codeFor);
  codes.forEach(code=>{const o=document.createElement('option');o.value=code;o.textContent=code;select.appendChild(o)});
- const key=foodMode?'expo-food-calibration-v1':'expo-hotspot-calibration-v1';
+ const key=stageMode?'expo-stage-calibration-v1':foodMode?'expo-food-calibration-v1':'expo-hotspot-calibration-v1';
  let positions={};try{positions=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){positions={}}
  const apply=(code,p)=>{const b=targets.find(x=>codeFor(x)===code);if(!b)return;Object.assign(b.style,{left:p.x+'%',top:p.y+'%',width:p.w+'%',height:p.h+'%'})};
  Object.entries(positions).forEach(([code,p])=>apply(code,p));
  const mark=()=>targets.forEach(b=>b.classList.toggle('calibration-target',codeFor(b)===select.value));
  select.onchange=mark;mark();
- document.getElementById('calibrationStatus').textContent=foodMode?'FOOD ZONE CALIBRATION · SELECT ZONE 5 OR STALL 1–15, THEN CLICK ITS CENTER ON THE MAP':'STALL CALIBRATION';
+ document.getElementById('calibrationStatus').textContent=stageMode?'STAGE CALIBRATION · CLICK THE CENTER OF THE STAGE, THEN COPY COORDINATES':foodMode?'FOOD ZONE CALIBRATION · SELECT ZONE 5 OR STALL 1–15, THEN CLICK ITS CENTER ON THE MAP':'STALL CALIBRATION';
+ if(stageMode){panel.querySelector('strong').textContent='Stage alignment editor';panel.querySelector('label').firstChild.textContent='Choose area ';panel.querySelector('label').nextElementSibling.textContent='Click the center of STAGE on the map. Adjust width and height below.';
+  const sizes=document.createElement('label');sizes.textContent='Hotspot size (%) ';
+  const b=targets[0];const width=document.createElement('input'),height=document.createElement('input');
+  [width,height].forEach((el,i)=>{el.type='number';el.min='0.5';el.max='100';el.step='0.1';el.style.width='70px';el.setAttribute('aria-label',i?'Stage hotspot height percent':'Stage hotspot width percent');el.value=parseFloat(i?b.style.height:b.style.width).toFixed(2);});
+  sizes.append(' Width ',width,' Height ',height);panel.insertBefore(sizes,document.getElementById('calibrationExport'));
+  const updateSize=()=>{const w=+width.value,h=+height.value;if(!(w>0&&w<=100&&h>0&&h<=100))return;const current=positions.STAGE||{x:parseFloat(b.style.left),y:parseFloat(b.style.top)};positions.STAGE={x:Math.min(current.x,100-w),y:Math.min(current.y,100-h),w,h};apply('STAGE',positions.STAGE);localStorage.setItem(key,JSON.stringify(positions));document.getElementById('calibrationStatus').textContent='STAGE SIZE SAVED LOCALLY · COPY COORDINATES TO PUBLISH';};
+  width.onchange=updateSize;height.onchange=updateSize;
+  if(positions.STAGE){width.value=positions.STAGE.w;height.value=positions.STAGE.h;}
+ }
  document.getElementById('expoMap').addEventListener('click',e=>{
   e.preventDefault();e.stopPropagation();const code=select.value;if(!code)return;
   const rect=document.getElementById('expoMap').getBoundingClientRect(),b=targets.find(x=>codeFor(x)===code);
