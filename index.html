@@ -414,7 +414,7 @@ function buildApprovedMapHotspots(){
  painting.title='View live painting students';painting.setAttribute('aria-label','View live painting student list');
  Object.assign(painting.style,{left:610/1408*100+'%',top:476/1056*100+'%',width:183/1408*100+'%',height:104/1056*100+'%'});
  painting.onclick=openLivePainting;layer.appendChild(painting);
- const stageButton=document.createElement('button');stageButton.type='button';stageButton.className='map-hotspot painting-hotspot';stageButton.title='View Flow of Expo and live performances';stageButton.setAttribute('aria-label','View live performances');Object.assign(stageButton.style,{left:590/1408*100+'%',top:584/1056*100+'%',width:230/1408*100+'%',height:62/1056*100+'%'});stageButton.onclick=showPerformances;layer.appendChild(stageButton);
+ const stageButton=document.createElement('button');stageButton.type='button';stageButton.className='map-hotspot stage-hotspot';stageButton.dataset.mapArea='STAGE';stageButton.title='Open Live Performances · Flow of Expo';stageButton.setAttribute('aria-label','Open Live Performances and Flow of Expo schedule');Object.assign(stageButton.style,{left:590/1408*100+'%',top:584/1056*100+'%',width:230/1408*100+'%',height:62/1056*100+'%',zIndex:'4'});stageButton.onclick=showPerformances;layer.appendChild(stageButton);
  const rows=(codes,x,top,step,w,h)=>codes.forEach((code,i)=>add(code,x,top+i*step,w,h));
  rows(['R79','R78','R77','R76','R75','R74'],156,57,25,75,24);
  add('R73',156,207,75,23); // R73 is the printed map label and popup identifier.
