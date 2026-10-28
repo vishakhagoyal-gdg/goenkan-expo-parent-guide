@@ -214,7 +214,15 @@ function openFoodStall(number){
   }
 }
  const students=document.getElementById('foodStudents');students.replaceChildren();
- const addPeople=(title,people)=>{if(!people.length)return;const h=document.createElement('h3');h.textContent=title;students.appendChild(h);const ul=document.createElement('ul');for(const [name,cls] of people){const li=document.createElement('li');li.textContent=name+(cls?' · '+cls:'');ul.appendChild(li)}students.appendChild(ul)};
+ const addPeople=(title,people)=>{if(!people.length)return;
+ const h=document.createElement('h3');h.textContent=title;students.appendChild(h);
+ const table=document.createElement('table'),head=document.createElement('thead'),tr=document.createElement('tr');
+ for(const label of ['#','Student Name','Class']){const th=document.createElement('th');th.textContent=label;tr.appendChild(th)}
+ head.appendChild(tr);table.appendChild(head);
+ const body=document.createElement('tbody');
+ people.forEach(([name,cls],i)=>{const row=document.createElement('tr');for(const value of [String(i+1),name,cls||'—']){const td=document.createElement('td');td.textContent=value;row.appendChild(td)}body.appendChild(row)});
+ table.appendChild(body);students.appendChild(table);
+};
  addPeople('Student Team',f.students);addPeople('Helpers',f.helpers);
  document.getElementById('foodModal').classList.add('open');document.body.style.overflow='hidden';
 }
