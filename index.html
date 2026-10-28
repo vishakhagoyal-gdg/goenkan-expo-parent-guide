@@ -132,14 +132,18 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
  .food-detail-card{cursor:default;overflow-wrap:anywhere} .food-subheading{margin:14px 0 5px;font-size:14px;color:#16345c} .food-people{margin:4px 0 8px;padding-left:19px;font-size:13px;line-height:1.55} #food-stalls{scroll-margin-top:18px} #foodGrid{align-items:start} #foodGrid .food-detail-card table{font-size:12px} #foodGrid .food-detail-card td{padding:7px 4px} .food-zone-hotspot:hover,.food-zone-hotspot:focus-visible{background:rgba(20,90,190,.10)}
 .food-card{cursor:pointer}.food-card:hover,.food-card:focus-visible{border-color:#8caee1;box-shadow:0 5px 18px rgba(24,79,187,.12);outline-offset:2px}.food-card .locate-button{margin-top:12px}
 .expo-heading{display:flex;justify-content:center;align-items:center;margin:12px auto}.expo-heading-logo{display:block;width:min(80%,300px);height:auto;object-fit:contain}.expo-heading-fallback{font-weight:900}
-/* Keep the native table layout: matching column widths in header and rows. */
-#foodModal #foodItems,#foodModal #foodStudents table{width:100%;table-layout:fixed;border-collapse:collapse}
-#foodModal #foodItems th:last-child,#foodModal #foodItems td:last-child{width:22%;text-align:right;white-space:nowrap}
-#foodModal #foodStudents th:first-child,#foodModal #foodStudents td:first-child{width:9%}
-#foodModal #foodStudents th:last-child,#foodModal #foodStudents td:last-child{width:16%;text-align:right;white-space:nowrap}
-#foodModal #foodItems th,#foodModal #foodItems td,#foodModal #foodStudents th,#foodModal #foodStudents td{overflow-wrap:break-word}
-#foodModal .sheet{padding-bottom:28px}
-#foodModal .close{position:static;margin-top:24px}
+/* Food popup uses the same spacing and table alignment as academic stalls. */
+#foodModal .sheet{padding:20px 24px 28px}
+#foodModal .info{margin:0 0 16px}
+#foodModal #foodStudents h3{margin:18px 0 10px}
+#foodModal .food-menu-title{margin:22px 0 10px}
+#foodModal table{width:100%;table-layout:fixed;border-collapse:collapse}
+#foodModal #foodStudents th:first-child,#foodModal #foodStudents td:first-child{width:10%}
+#foodModal #foodStudents th:last-child,#foodModal #foodStudents td:last-child{width:22%;text-align:left;white-space:nowrap}
+#foodModal .food-menu-table th:last-child,#foodModal .food-menu-table td:last-child{width:22%;text-align:left;white-space:nowrap}
+#foodModal th,#foodModal td{padding:9px 7px;overflow-wrap:break-word}
+#foodModal .close{position:static;margin-top:20px}
+@media(max-width:640px){#foodModal .sheet{padding:16px 14px 24px}#foodModal .info{grid-template-columns:1fr 1fr}#foodModal #foodStudents th:first-child,#foodModal #foodStudents td:first-child{width:12%}#foodModal #foodStudents th:last-child,#foodModal #foodStudents td:last-child{width:19%}#foodModal .food-menu-table th:last-child,#foodModal .food-menu-table td:last-child{width:27%}}
 </style>
 </head>
 <body>
@@ -198,7 +202,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
  </div>
 </div>
 
-<div class="modal" id="foodModal" onclick="if(event.target===this) closeFoodModal()"><div class="sheet"><div class="handle"></div><div class="mstall" id="foodNumber"></div><div class="msubject" id="foodType"></div><div class="mproject" id="foodName"></div><h3>Food Menu</h3><table><thead><tr><th>Food Item</th><th>Price (₹)</th></tr></thead><tbody id="foodItems"></tbody></table><div id="foodStaff" class="info" style="margin-top:16px"></div><div id="foodStudents" style="margin-top:12px"></div><button class="close" onclick="closeFoodModal()">Close</button></div></div>
+<div class="modal" id="foodModal" onclick="if(event.target===this) closeFoodModal()"><div class="sheet"><div class="handle"></div><div class="mstall" id="foodNumber"></div><div class="msubject" id="foodType"></div><div class="mproject" id="foodName"></div><div id="foodStaff" class="info"></div><div id="foodStudents"></div><h3 class="food-menu-title">Food Menu</h3><table class="food-menu-table"><thead><tr><th>Food Item</th><th>Price (₹)</th></tr></thead><tbody id="foodItems"></tbody></table><button class="close" onclick="closeFoodModal()">Close</button></div></div>
 <div class="modal" id="paintingModal" onclick="if(event.target===this) closePainting()"><div class="sheet"><div class="handle"></div><div class="mstall">LIVE PAINTING</div><div class="msubject">Goenkan Expo 2026–27</div><div class="mproject">Participating Students</div><table><thead><tr><th>#</th><th>Student Name</th><th>Class / Division</th></tr></thead><tbody></tbody></table><button class="close" onclick="closePainting()">Close</button></div></div>
 <footer>G.D. Goenka International School, Surat • Goenkan Expo 2026–27</footer>
 
@@ -232,7 +236,7 @@ function openFoodStall(number){
  table.appendChild(body);students.appendChild(table);
 };
  addPeople('Student Team',f.students);addPeople('Helpers',f.helpers);
- document.getElementById('foodModal').classList.add('open');document.body.style.overflow='hidden';
+ document.getElementById('foodModal').classList.add('open');document.getElementById('foodModal').querySelector('.sheet').scrollTop=0;document.body.style.overflow='hidden';
 }
 function closeFoodModal(){document.getElementById('foodModal').classList.remove('open');document.body.style.overflow=''}
 function showFoodZone(){
