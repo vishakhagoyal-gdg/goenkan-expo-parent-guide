@@ -150,6 +150,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 .entry-zone-hit:hover,.entry-zone-hit:focus-visible{background:rgba(26,100,210,.14);outline:3px solid #1a64d2}
 .entry-zone4{left:24%;top:34%;width:30%;height:28%}
 .entry-zone5{left:24%;top:62%;width:30%;height:22%}
+.map-navigation{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:12px 0}.map-navigation button{background:#173d70;color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:800;cursor:pointer}.map-navigation button:hover,.map-navigation button:focus-visible{background:#2868b0}.map-navigation button[hidden]{display:none!important}.entry-link-hotspot{touch-action:manipulation}
 </style>
 <style>
 .approved-map{position:relative;width:100%;min-width:0;max-width:1200px;margin:auto;line-height:0}
@@ -205,7 +206,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
   <div class="section-title"><h2>Interactive Expo Floor Plan</h2><span class="small">Tap a stall to view details</span></div>
   <div class="floor-note">Swipe sideways on mobile if needed. Every numbered project stall below is clickable.</div>
   <div id="calibrationPanel" class="calibration-panel"><strong>Stall alignment editor</strong><label>Choose stall <select id="calibrationStall"></select></label><span>Click the centre of its printed number on the image.</span><button type="button" id="calibrationExport">Copy calibrated positions</button><button type="button" id="calibrationReset">Reset this browser</button><span id="calibrationStatus" role="status"></span></div>
-<div class="map-scroll">
+<div class="map-navigation"><button type="button" id="entryMapOpenButton" onclick="showEntryLayout()">🚩 VIEW MAIN ENTRY &amp; RED CARPET ROUTE</button><button type="button" id="entryMapBackButton" onclick="showMasterLayout()" hidden>← BACK TO MASTER FLOOR PLAN</button></div><div class="map-scroll">
     <div class="approved-map" id="expoMap">
       <img src="Expo%20Layout.png" alt="Approved Goenkan Expo floor plan showing Zones 4 and 5" draggable="false" onerror="this.closest('.approved-map').classList.add('image-missing')">
       <div class="hotspots" id="mapHotspots" aria-label="Clickable project stalls"></div>
@@ -412,10 +413,10 @@ function openLivePainting(){const modal=document.getElementById('paintingModal')
 function closePainting(){document.getElementById('paintingModal').classList.remove('open');document.body.style.overflow=''}
 function showEntryLayout(){
  const view=document.getElementById('entryMapView');const img=view.querySelector('img');
- if(!img.complete||!img.naturalWidth){const test=new Image();test.onload=()=>{view.hidden=false;document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'start'})};test.onerror=()=>alert('Entry layout image is not available yet. Please try again shortly.');test.src=img.src;return;}
+ if(!img.complete||!img.naturalWidth){const test=new Image();test.onload=()=>{view.hidden=false;document.getElementById('entryMapOpenButton').hidden=true;document.getElementById('entryMapBackButton').hidden=false;document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'start'})};test.onerror=()=>alert('Entry layout image is not available yet. Please try again shortly.');test.src=img.src;return;}
  view.hidden=false;document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'start'});
 }
-function showMasterLayout(){document.getElementById('entryMapView').hidden=true;document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'start'});}
+function showMasterLayout(){document.getElementById('entryMapView').hidden=true;document.getElementById('entryMapOpenButton').hidden=false;document.getElementById('entryMapBackButton').hidden=true;document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'start'});}
 function buildApprovedMapHotspots(){
  const layer=document.getElementById('mapHotspots');if(!layer)return;
  // Coordinates match the approved 1408 x 1056 map; image pixels remain untouched.
@@ -433,7 +434,7 @@ function buildApprovedMapHotspots(){
  Object.assign(painting.style,{left:610/1408*100+'%',top:476/1056*100+'%',width:183/1408*100+'%',height:104/1056*100+'%'});
  painting.onclick=openLivePainting;layer.appendChild(painting);
  const stageButton=document.createElement('button');stageButton.type='button';stageButton.className='map-hotspot stage-hotspot';stageButton.dataset.mapArea='STAGE';stageButton.title='Open Live Performances · Flow of Expo';stageButton.setAttribute('aria-label','Open Live Performances and Flow of Expo schedule');Object.assign(stageButton.style,{left:'41.3683%',top:'8.659%',width:'16.3352%',height:'5.87121%',zIndex:'4'});stageButton.onclick=showPerformances;layer.appendChild(stageButton);
- const entryButton=document.createElement('button');entryButton.type='button';entryButton.className='map-hotspot entry-link-hotspot';entryButton.title='Open Main Entry and Red Carpet Map';entryButton.setAttribute('aria-label','Open Main Entry, Parking and Red Carpet Map');Object.assign(entryButton.style,{left:'88.2%',top:'3.1%',width:'11.1%',height:'5.2%',zIndex:'8'});entryButton.onclick=showEntryLayout;layer.appendChild(entryButton);
+ const entryButton=document.createElement('button');entryButton.type='button';entryButton.className='map-hotspot entry-link-hotspot';entryButton.title='Open Main Entry and Red Carpet Map';entryButton.setAttribute('aria-label','Open Main Entry, Parking and Red Carpet Map');Object.assign(entryButton.style,{left:'88.0%',top:'2.5%',width:'11.5%',height:'8.5%',zIndex:'50'});entryButton.onclick=showEntryLayout;layer.appendChild(entryButton);
  const rows=(codes,x,top,step,w,h)=>codes.forEach((code,i)=>add(code,x,top+i*step,w,h));
  rows(['R79','R78','R77','R76','R75','R74'],156,57,25,75,24);
  add('R73',156,207,75,23); // R73 is the printed map label and popup identifier.
