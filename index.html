@@ -187,6 +187,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 /* Green room directory: additions only; original floor-plan artwork is unchanged. */
 .greenroom-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:15px 0}.greenroom-tab{border:1px solid #d7e3f0;border-radius:12px;background:#fff;padding:14px 8px;cursor:pointer;text-align:center;color:#173d70;font-weight:800}.greenroom-tab small{display:block;margin-top:5px;font-weight:500;color:#65758b}.greenroom-tab.selected{background:#173d70;color:white}.greenroom-tab.selected small{color:#e3edff}.greenroom-panel{border:1px solid #d7e3f0;border-radius:15px;padding:18px;background:#fff}.greenroom-staff{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:15px 0}.greenroom-staff>div{background:#f2f6fc;border-radius:10px;padding:12px}.greenroom-staff strong{display:block;font-size:12px;color:#53647b;margin-bottom:8px}.greenroom-staff p{margin:6px 0}.greenroom-staff a{color:#174d91}.greenroom-table{width:100%;border-collapse:collapse}.greenroom-table th,.greenroom-table td{padding:9px;border-bottom:1px solid #e6ecf4;text-align:left}.greenroom-table th{background:#f3f6fb}.greenroom-table td:last-child{white-space:nowrap}.greenroom-search{box-sizing:border-box;width:100%;padding:12px;border:1px solid #d0dceb;border-radius:9px;margin:10px 0 14px;font:inherit}.greenroom-section{scroll-margin-top:18px}.greenroom-empty{padding:16px;color:#65758b}.greenroom-tab[hidden]{display:none!important}
 </style>
+<style>
+/* Match green room cards to the existing stall directory design. */
+.greenroom-tabs{grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:16px;margin:18px 0 22px}.greenroom-tab{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-align:left;color:var(--navy);box-shadow:0 5px 18px rgba(24,49,83,.06);transition:transform .15s,box-shadow .15s}.greenroom-tab:hover,.greenroom-tab:focus-visible{transform:translateY(-2px);box-shadow:0 9px 24px rgba(24,49,83,.13)}.greenroom-tab.selected{background:var(--card);color:var(--navy);border:2px solid var(--blue);box-shadow:0 5px 18px rgba(24,49,83,.12)}.greenroom-tab small,.greenroom-tab.selected small{color:var(--muted);font-size:12px;margin-top:10px}.greenroom-tab::after{content:'VIEW DETAILS';display:block;color:var(--blue);font-size:11px;margin-top:12px;font-weight:800;letter-spacing:.04em}.greenroom-panel{box-shadow:0 5px 18px rgba(24,49,83,.06)}
+</style>
 </head>
 <body>
 <header>
@@ -225,7 +229,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 
 
   
-<section id="green-rooms" class="greenroom-section" aria-label="Green room directory"><div class="section-title"><h2>Green Room Directory</h2><span class="small">7 rooms · 264 student entries</span></div><p class="floor-note">Select a green room to see its supervising teachers and student list. You can also search for a student or teacher using the main search bar above.</p><div id="greenroomTabs" class="greenroom-tabs"></div><div id="greenroomPanel" class="greenroom-panel"><h3 id="greenroomHeading"></h3><div id="greenroomStaff" class="greenroom-staff"></div><input id="greenroomLocalSearch" class="greenroom-search" placeholder="Search students by name or class" aria-label="Search students in selected green room"><div style="overflow-x:auto"><table class="greenroom-table"><thead><tr><th>#</th><th>Student name</th><th>Class</th></tr></thead><tbody id="greenroomStudents"></tbody></table></div><p id="greenroomEmpty" class="greenroom-empty" hidden>No matching students in this room.</p></div></section>
+
 
 <div class="section-title" id="stalls"><h2>Stall Directory</h2><span class="small" id="count"></span></div>
   <div class="grid" id="grid"></div>
@@ -234,6 +238,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
   <div class="grid" id="foodGrid"></div>
 
   <section id="live-performances" class="wrap" style="scroll-margin-top:20px"><div class="performance-heading"><div class="performance-art" aria-hidden="true">♫ &nbsp; ✦ &nbsp; ♪</div><h2>Live Performances</h2><div class="performance-kicker">— Flow of Expo —</div><p class="muted">Select any programme to view participating students and teacher details.</p></div><div class="performance-scroll"><table class="performance-list"><thead><tr><th><span aria-hidden="true">#</span> Flow</th><th><span aria-hidden="true">◷</span> Timing</th><th><span aria-hidden="true">♫</span> Performance Name</th></tr></thead><tbody id="performanceRows"></tbody></table></div></section>
+
+<section id="green-rooms" class="greenroom-section" aria-label="Green room directory"><div class="section-title"><h2>Green Room Directory</h2><span class="small">7 rooms · 264 student entries</span></div><p class="floor-note">Select a green room to see its supervising teachers and student list. You can also search for a student or teacher using the main search bar above.</p><div id="greenroomTabs" class="greenroom-tabs"></div><div id="greenroomPanel" class="greenroom-panel"><h3 id="greenroomHeading"></h3><div id="greenroomStaff" class="greenroom-staff"></div><input id="greenroomLocalSearch" class="greenroom-search" placeholder="Search students by name or class" aria-label="Search students in selected green room"><div style="overflow-x:auto"><table class="greenroom-table"><thead><tr><th>#</th><th>Student name</th><th>Class</th></tr></thead><tbody id="greenroomStudents"></tbody></table></div><p id="greenroomEmpty" class="greenroom-empty" hidden>No matching students in this room.</p></div></section>
 </div>
 
 <div class="modal" id="modal" onclick="if(event.target===this) closeModal()">
