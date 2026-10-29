@@ -143,6 +143,13 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
 #live-performances .performance-list tbody td:first-child{font-weight:800;color:#19345d}
 #live-performances .performance-list tbody tr:last-child td{border-bottom:0}
 @media(max-width:600px){#live-performances{padding:16px 10px 18px;border-radius:18px}#live-performances .performance-heading h2{font-size:26px}#live-performances .performance-art{font-size:19px}#live-performances .performance-heading p{font-size:13px}#live-performances .performance-list td{padding:12px 10px;font-size:12px}#live-performances .performance-list th{padding:13px 10px;font-size:12px}}
+.entry-map-view{position:absolute;inset:0;background:#fff;z-index:30;line-height:0}
+.entry-map-view[hidden]{display:none!important}
+.entry-map-view img{display:block;width:100%;height:100%;object-fit:fill}
+.entry-zone-hit{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:6px}
+.entry-zone-hit:hover,.entry-zone-hit:focus-visible{background:rgba(26,100,210,.14);outline:3px solid #1a64d2}
+.entry-zone4{left:24%;top:34%;width:30%;height:28%}
+.entry-zone5{left:24%;top:62%;width:30%;height:22%}
 </style>
 <style>
 .approved-map{position:relative;width:100%;min-width:0;max-width:1200px;margin:auto;line-height:0}
@@ -202,6 +209,11 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:26px 16px 38p
     <div class="approved-map" id="expoMap">
       <img src="Expo%20Layout.png" alt="Approved Goenkan Expo floor plan showing Zones 4 and 5" draggable="false" onerror="this.closest('.approved-map').classList.add('image-missing')">
       <div class="hotspots" id="mapHotspots" aria-label="Clickable project stalls"></div>
+      <div class="entry-map-view" id="entryMapView" hidden>
+        <img src="Entry%20Layout.png" alt="Expo entry layout showing parking, red carpet, Zones 4 and 5, and Zone 6" draggable="false">
+        <button type="button" class="entry-zone-hit entry-zone4" onclick="showMasterLayout()" aria-label="Open detailed Zone 4 master floor plan" title="View detailed Expo floor plan — Zone 4"></button>
+        <button type="button" class="entry-zone-hit entry-zone5" onclick="showMasterLayout()" aria-label="Open detailed Zone 5 master floor plan" title="View detailed Expo floor plan — Zone 5"></button>
+      </div>
       <p class="image-error">The approved map image must be available as Expo Layout.png to finish the interactive floor plan.</p>
     </div>
   </div>
@@ -398,6 +410,12 @@ function buildInteractiveMap(){
 const livePaintingStudents=[["MEHREEN KAUR CHADHA","III B"],["AMYRA KASHIF SHAIKH","III C"],["AARYA VIVEK ITALIA","III C"],["PRAYAAN SUMIT DARUKA","V A"],["SAANVI DHAREWA","V A"],["MAYANSHI SUMIT DARUKA","VI C"],["RITESH HITESH BANSAL","VI E"],["VIANNA KEYUR MULIA","VI E"],["VEDIKA ASHUTOSH KANODIA","VI E"],["SHAURYA VIPIN GARG","VII C"],["KAVYA GAURANGBHAI RAMANI","VII D"],["MADHAVI RUPESH DAGA","VIII D"],["MAANYA NAVEEN BOHRA","VIII D"],["PARIHA VIJAY MAVANI","VIII D"],["VANI LOHIA","VIII D"],["SHANAYA PATEL","VIII E"],["ANIKA BHARTIA","VIII E"],["TVISHI MANOJ AGARWAL","IX B"],["AANGI JINESHKUMAR ZAVERI","IX B"],["AAROHI RAJESH PRAHLADKA","X C"],["DIVA SAMIR PATEL","X D"],["HITAKSHI KARAN KHAITAN","X D"],["SAMAIRA PULKIT DALMIA","X D"],["PRANAV ABHISHEK KHETAN","XII C"],["YASHASVI RAKESH HASWANI","XII A"],["ANIKA SUBIR BATRA","XI A"]];
 function openLivePainting(){const modal=document.getElementById('paintingModal');const body=modal.querySelector('tbody');body.replaceChildren();livePaintingStudents.forEach(([name,cls],i)=>{const tr=document.createElement('tr');for(const val of [i+1,name,cls]){const td=document.createElement('td');td.textContent=val;tr.appendChild(td)}body.appendChild(tr)});modal.classList.add('open');document.body.style.overflow='hidden'}
 function closePainting(){document.getElementById('paintingModal').classList.remove('open');document.body.style.overflow=''}
+function showEntryLayout(){
+ const view=document.getElementById('entryMapView');const img=view.querySelector('img');
+ if(!img.complete||!img.naturalWidth){const test=new Image();test.onload=()=>{view.hidden=false;document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'start'})};test.onerror=()=>alert('Entry layout image is not available yet. Please try again shortly.');test.src=img.src;return;}
+ view.hidden=false;document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function showMasterLayout(){document.getElementById('entryMapView').hidden=true;document.getElementById('expoMap').scrollIntoView({behavior:'smooth',block:'start'});}
 function buildApprovedMapHotspots(){
  const layer=document.getElementById('mapHotspots');if(!layer)return;
  // Coordinates match the approved 1408 x 1056 map; image pixels remain untouched.
@@ -415,6 +433,7 @@ function buildApprovedMapHotspots(){
  Object.assign(painting.style,{left:610/1408*100+'%',top:476/1056*100+'%',width:183/1408*100+'%',height:104/1056*100+'%'});
  painting.onclick=openLivePainting;layer.appendChild(painting);
  const stageButton=document.createElement('button');stageButton.type='button';stageButton.className='map-hotspot stage-hotspot';stageButton.dataset.mapArea='STAGE';stageButton.title='Open Live Performances · Flow of Expo';stageButton.setAttribute('aria-label','Open Live Performances and Flow of Expo schedule');Object.assign(stageButton.style,{left:'41.3683%',top:'8.659%',width:'16.3352%',height:'5.87121%',zIndex:'4'});stageButton.onclick=showPerformances;layer.appendChild(stageButton);
+ const entryButton=document.createElement('button');entryButton.type='button';entryButton.className='map-hotspot entry-link-hotspot';entryButton.title='Open Main Entry and Red Carpet Map';entryButton.setAttribute('aria-label','Open Main Entry, Parking and Red Carpet Map');Object.assign(entryButton.style,{left:'88.2%',top:'3.1%',width:'11.1%',height:'5.2%',zIndex:'8'});entryButton.onclick=showEntryLayout;layer.appendChild(entryButton);
  const rows=(codes,x,top,step,w,h)=>codes.forEach((code,i)=>add(code,x,top+i*step,w,h));
  rows(['R79','R78','R77','R76','R75','R74'],156,57,25,75,24);
  add('R73',156,207,75,23); // R73 is the printed map label and popup identifier.
