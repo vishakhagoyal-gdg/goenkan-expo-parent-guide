@@ -447,6 +447,13 @@ function buildApprovedMapHotspots(){
  painting.title='View live painting students';painting.setAttribute('aria-label','View live painting student list');
  Object.assign(painting.style,{left:610/1408*100+'%',top:476/1056*100+'%',width:183/1408*100+'%',height:104/1056*100+'%'});
  painting.onclick=openLivePainting;layer.appendChild(painting);
+ const greenRoomButton=document.createElement('button');
+ greenRoomButton.type='button';greenRoomButton.className='map-hotspot greenroom-hotspot';
+ greenRoomButton.title='View Green Room Directory';greenRoomButton.setAttribute('aria-label','Open Green Room Directory and student information');
+ // Transparent overlay calibrated to the GREEN ROOM label on the approved map; artwork unchanged.
+ Object.assign(greenRoomButton.style,{left:'44.5%',top:'3.8%',width:'14.2%',height:'4.6%',zIndex:'5'});
+ greenRoomButton.onclick=()=>{clearCompletedSearch();document.getElementById('green-rooms').scrollIntoView({behavior:'smooth',block:'start'});};
+ layer.appendChild(greenRoomButton);
  const stageButton=document.createElement('button');stageButton.type='button';stageButton.className='map-hotspot stage-hotspot';stageButton.dataset.mapArea='STAGE';stageButton.title='Open Live Performances · Flow of Expo';stageButton.setAttribute('aria-label','Open Live Performances and Flow of Expo schedule');Object.assign(stageButton.style,{left:'41.3683%',top:'8.659%',width:'16.3352%',height:'5.87121%',zIndex:'4'});stageButton.onclick=showPerformances;layer.appendChild(stageButton);
  const entryButton=document.createElement('button');entryButton.type='button';entryButton.className='map-hotspot entry-link-hotspot';entryButton.title='Open Main Entry and Red Carpet Map';entryButton.setAttribute('aria-label','Open Main Entry, Parking and Red Carpet Map');Object.assign(entryButton.style,{left:'88.0%',top:'2.5%',width:'11.5%',height:'8.5%',zIndex:'50'});entryButton.onclick=showEntryLayout;layer.appendChild(entryButton);
  const rows=(codes,x,top,step,w,h)=>codes.forEach((code,i)=>add(code,x,top+i*step,w,h));
